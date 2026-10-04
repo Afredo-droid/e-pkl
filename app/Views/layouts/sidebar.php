@@ -1,7 +1,25 @@
 <?php
+// URL default tiap menu (ubah di sini kalau route-nya berbeda)
+// public/index.php, paling atas
+$base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+
+$defaultMenuUrls = [
+    'dashboard'       => $base . '/',
+    'data-siswa'      => $base . '/?page=data-siswa',
+    'guru-pembimbing' => '#',
+    'instansi-mitra'  => '#',
+    'manajemen-user'  => '#',
+    'laporan-rekap'   => '#',
+];
+
+// Kalau controller mengirim $adminMenuUrls (misalnya 'logout'), nilainya tetap dipakai
 $adminMenuUrls = isset($adminMenuUrls) && is_array($adminMenuUrls) ? $adminMenuUrls : [];
-$dashboardUrl = $adminMenuUrls['dashboard'] ?? ($_SERVER['SCRIPT_NAME'] ?? '/');
+$adminMenuUrls = array_merge($defaultMenuUrls, $adminMenuUrls);
+
+$dashboardUrl = $adminMenuUrls['dashboard'];
 $dashboardUrl = is_string($dashboardUrl) && $dashboardUrl !== '' ? $dashboardUrl : '/';
+
+$activePage = $activePage ?? '';
 
 $menuItems = [
     ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fas fa-fw fa-chart-line'],
@@ -28,7 +46,7 @@ $menuItems = [
 
     <?php foreach ($menuItems as $item): ?>
         <?php $isActive = $activePage === $item['key']; ?>
-        <?php $menuUrl = $adminMenuUrls[$item['key']] ?? ($item['key'] === 'dashboard' ? $dashboardUrl : '#'); ?>
+        <?php $menuUrl = $adminMenuUrls[$item['key']] ?? '#'; ?>
         <li class="nav-item<?= $isActive ? ' active' : '' ?>">
             <a class="nav-link<?= $isActive ? ' active' : '' ?>"
                href="<?= $e($menuUrl) ?>"
